@@ -1,0 +1,73 @@
+/*
+ ID: kasturisa1
+ LANG: JAVA
+ TASK: milk2
+ */
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.StringTokenizer;
+
+public class milk2 {
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new FileReader("usaco/milk2.in"));
+		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter("milk2.out")));
+		int noOfFarmers = Integer.parseInt(br.readLine());
+
+		StringTokenizer st;
+		int timings[][] = new int[noOfFarmers][2];
+		for(int i=0; i<noOfFarmers; ++i) {
+			st = new StringTokenizer(br.readLine());
+			timings[i][0] = Integer.parseInt(st.nextToken());
+			timings[i][1] = Integer.parseInt(st.nextToken());
+		}
+		br.close();	
+		
+		/* Sort the timings based on the start time */
+		int s=0,e=0, minInd = 0, minS = 0;
+		for(int i=0; i<noOfFarmers-1; ++i) {
+			minInd = i; minS = timings[i][0];
+			for(int j=i+1; j<noOfFarmers; ++j) {
+				if(timings[j][0] < minS) {
+					minInd = j; minS = timings[j][0];
+				}
+			}
+			/* Swap the things */
+			s = timings[i][0]; e = timings[i][1];
+			timings[i][0] = timings[minInd][0]; timings[i][1] = timings[minInd][1];
+			timings[minInd][0] = s; timings[minInd][1] = e;
+		}
+		
+		boolean valid[] = new boolean[noOfFarmers];
+		for(int i=0; i<noOfFarmers; ++i) valid[i] = true;
+
+		/* End timing of present, start time of next */
+		for(int i=0; i<noOfFarmers-1; ++i) {
+			if(timings[i][1] > timings[i+1][0]) {
+				valid[i+1] = false;
+				timings[i][1] = timings[i][1] > timings[i+1][1] ? timings[i][1] : timings[i+1][1];
+			}
+		}
+
+		int tmp = 0, maxBu = 0, maxId = 0;
+		for(int i=0; i<noOfFarmers; ++i) {
+			if ( valid[i] && ((timings[i][1] - timings[i][0]) > maxBu)) {
+				maxBu = timings[i][1] - timings[i][0];
+			}
+		}
+
+		e = timings[0][1];
+		for(int i=1; i<noOfFarmers; ++i) {
+			if(!valid[i]) continue;
+			maxId  = (timings[i][0] - e) > maxId ? timings[i][0] - e : maxId;
+			e = timings[i][1];
+		}
+
+		writer.write(maxBu + " " + maxId + "\n");
+		writer.close();
+		System.exit(0);
+
+	}
+}

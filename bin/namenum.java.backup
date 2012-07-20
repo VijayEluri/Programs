@@ -1,0 +1,101 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+/*
+ ID: kasturisa1
+ LANG: JAVA
+ TASK: namenum 
+ */
+
+/**
+ * @author sasik
+ * 
+ */
+public class namenum {
+	HashSet<String> dict;
+	Long no;
+	HashMap<Character, HashMap<Character, Character>> mobKey;
+	public static void main(String[] args) throws IOException {
+		namenum nn = new namenum();
+		nn.readInput();
+		nn.process();
+	}
+	
+	public namenum() {
+		/* Load the mobkeyboard */
+		mobKey = new HashMap<Character, HashMap<Character,Character>>();
+		HashMap<Character,Character> temp = new HashMap<Character, Character>();
+		temp.put('0', 'A'); temp.put('1', 'B'); temp.put('2', 'C');
+		mobKey.put('2', temp);
+		temp = new HashMap<Character, Character>();
+		temp.put('0', 'D'); temp.put('1', 'E'); temp.put('2', 'F');
+		mobKey.put('3', temp);
+		temp = new HashMap<Character, Character>();
+		temp.put('0', 'G'); temp.put('1', 'H'); temp.put('2', 'I');
+		mobKey.put('4', temp);
+		temp = new HashMap<Character, Character>();
+		temp.put('0', 'J'); temp.put('1', 'K'); temp.put('2', 'L');
+		mobKey.put('5', temp);
+		temp = new HashMap<Character, Character>();
+		temp.put('0', 'M'); temp.put('1', 'N'); temp.put('2', 'O');
+		mobKey.put('6', temp);
+		temp = new HashMap<Character, Character>();
+		temp.put('0', 'P'); temp.put('1', 'R'); temp.put('2', 'S');
+		mobKey.put('7', temp);
+		temp = new HashMap<Character, Character>();
+		temp.put('0', 'T'); temp.put('1', 'U'); temp.put('2', 'V');
+		mobKey.put('8', temp);
+		temp = new HashMap<Character, Character>();
+		temp.put('0', 'W'); temp.put('1', 'X'); temp.put('2', 'Z');
+		mobKey.put('9', temp);
+		
+		
+		/* Verify */
+		//System.out.println(mobKey.get('2').toString());
+		//System.out.println(mobKey.get('3').toString());
+		//System.out.println(mobKey.get('4').toString());
+		//System.out.println(mobKey.get('7').toString());
+	}
+
+	public void readInput() throws IOException {
+		/* Load the dictionary of acceptable words */
+		BufferedReader br = new BufferedReader(new FileReader("dict.txt"));
+		dict = new HashSet<String>();
+		while (true) {
+			final String s = br.readLine();
+			if (s == null) break;
+			dict.add(s);
+		}	
+		br = new BufferedReader(new FileReader("namenum.in"));
+		no = Long.parseLong(br.readLine());
+		br.close();
+	}
+	
+	public void process() throws IOException {
+		PrintWriter w = new PrintWriter(new BufferedWriter(new FileWriter("namenum.out")));
+		final short size = (short) no.toString().length();
+		final char[] actual = no.toString().toCharArray();
+		StringBuilder strB = new StringBuilder();
+		for(short i=0; i<size; ++i) strB.append("0");
+		NumberFormat formatter = new DecimalFormat(strB.toString());
+		char[] temp = new char[size];
+		boolean flag = false;
+		for(int i= 0, n = (int)Math.pow(3, size); i<n; i++) {
+			final char[] prePer = formatter.format(Long.parseLong(Long.toString(i, 3))).toCharArray();
+			//System.out.println(Arrays.toString(prePer));
+			//System.out.println("Length: " + prePer.length);
+			for(int j=0; j<size; j++) {
+				temp[j] = mobKey.get(actual[j]).get(prePer[j]);	
+			}
+			final String str = new String(temp);
+			//System.out.println(str);
+			if (dict.contains(str)) {
+				flag = true;
+				w.append(str + "\n");
+			}
+		}
+		if(!flag) w.append("NONE\n");
+		w.close();
+	}
+	
+}
